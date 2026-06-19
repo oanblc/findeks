@@ -125,7 +125,8 @@ let adminEmail = localStorage.getItem('fn_admin_email') || '';
 
 const TABS = [
   ['panel','Panel'], ['aboneler','Aboneler'], ['kullanicilar','Kullanıcılar'],
-  ['satislar','Satışlar'], ['topluluk','Topluluk'], ['duyuru','Duyuru'], ['ayarlar','Ayarlar'],
+  ['satislar','Satışlar'], ['topluluk','Topluluk'], ['kutuphane','Kütüphane'],
+  ['duyuru','Duyuru'], ['ayarlar','Ayarlar'],
 ];
 let activeTab = 'panel';
 
@@ -175,7 +176,7 @@ function go(tab){
   activeTab=tab;
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   ({panel:renderPanel,aboneler:renderSubs,kullanicilar:renderUsers,satislar:renderSales,
-    topluluk:renderCommunity,duyuru:renderBroadcast,ayarlar:renderSettings}[tab])();
+    topluluk:renderCommunity,kutuphane:renderKnowledge,duyuru:renderBroadcast,ayarlar:renderSettings}[tab])();
 }
 function setMain(html){ document.getElementById('main').innerHTML=html; }
 function loading(){ setMain('<div class="empty">Yükleniyor…</div>'); }
@@ -196,6 +197,7 @@ async function renderPanel(){
         ${stat('Satılan kredi',fmt(c.credits_sold),'')}
         ${stat('Topluluk cihazı',fmt(c.community_devices),'')}
         ${stat('Bulut yedeği',fmt(c.cloud_backups),'')}
+        ${stat('Kütüphane',fmt(c.knowledge),'girdi')}
       </div>
       <div class="panel">
         <h3>Sistem sağlığı</h3>
@@ -323,6 +325,45 @@ async function renderCommunity(){
       </div>`);
   }catch(e){ setMain(err(e)); }
 }
+
+// --- KÜTÜPHANE (bilgi bankası) ---
+async function renderKnowledge(){
+  loading();
+  try{
+    const d=await api('/api/admin/knowledge?limit=80');
+    const rows=d.entries;
+    setMain(`
+      <h2 class="pg">Bilgi Kütüphanesi</h2>
+      <div class="sub">Her gün otomatik toplanır · ${fmt(d.total)} girdi · <b>finans</b> kayıtları kullanıcı AI tavsiyesini besler</div>
+      <div class="panel">
+        <div class="row" style="margin-bottom:0">
+          <button class="btn sm navy" onclick="collectNow(this)">Şimdi topla</button>
+          <span class="note" style="margin:0">finans (TCMB/mevzuat/ipucu, güncel) + özet (uygulama verisi analizi)</span>
+        </div>
+      </div>
+      ${rows.length?rows.map(kbCard).join(''):'<div class="panel"><div class="empty">Henüz kayıt yok. "Şimdi topla" ile başlatın.</div></div>'}`);
+  }catch(e){ setMain(err(e)); }
+}
+function kbCard(e){
+  const cat=e.category==='finans'?'<span class="pill green">finans</span>':'<span class="pill">özet</span>';
+  return `<div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <div><div style="font-weight:800;font-size:15px">${esc(e.title)}</div>
+        <div class="note" style="margin:4px 0 0">${cat} · ${esc(e.day)} · ${dt(e.created_at)}</div></div>
+      <button class="btn sm danger" onclick="delKb(${e.id})">Sil</button>
+    </div>
+    <div style="white-space:pre-wrap;font-size:14px;margin-top:12px;line-height:1.6">${esc(e.content)}</div>
+    ${e.source?`<div class="note" style="margin-top:10px">Kaynak: ${esc(e.source)}</div>`:''}
+  </div>`;
+}
+async function collectNow(btn){
+  btn.disabled=true; btn.textContent='Toplanıyor…';
+  try{ const r=await api('/api/admin/knowledge/collect',{method:'POST'}); toast(r.message||'Başlatıldı');
+    setTimeout(renderKnowledge,9000);
+  }catch(e){ toast(e.message); btn.disabled=false; btn.textContent='Şimdi topla'; }
+}
+async function delKb(id){ if(!confirm('Bu kaydı silmek istiyor musunuz?'))return;
+  try{ await api('/api/admin/knowledge/'+id,{method:'DELETE'}); toast('Silindi'); renderKnowledge(); }catch(e){ toast(e.message);} }
 
 // --- DUYURU (broadcast) ---
 async function renderBroadcast(){
