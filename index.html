@@ -504,11 +504,12 @@
     <span class="eyebrow" style="color:var(--teal)">Lansman</span>
     <h2 style="margin-top:8px">Yayınlandığında ilk siz haberdar olun</h2>
     <p>Uygulama yayınlandığında size e-posta ile haber verelim. Mağaza bağlantıları yakında aktifleşecek.</p>
-    <form class="frm" onsubmit="event.preventDefault();this.style.display='none';document.getElementById('ok').style.display='block';">
-      <input type="email" required placeholder="E-posta adresiniz" aria-label="E-posta">
+    <form class="frm" id="subForm" onsubmit="return subscribe(event)">
+      <input id="subEmail" type="email" required placeholder="E-posta adresiniz" aria-label="E-posta">
       <button class="btn btn-primary" type="submit">Beni bilgilendir</button>
     </form>
-    <div class="ok" id="ok">Teşekkürler! Yayınlandığında size haber vereceğiz.</div>
+    <div class="ok" id="ok">Teşekkürler! Kaydınızı aldık — onay e-postası gönderdik.</div>
+    <div class="ok" id="suberr" style="color:#fca5a5">Bir sorun oluştu, lütfen tekrar deneyin.</div>
     <p class="note">E-postanızı yalnızca lansman bildirimi için kullanırız. İstediğiniz an abonelikten çıkabilirsiniz.</p>
   </div>
 </section>
@@ -531,7 +532,7 @@
       <h5>Yasal</h5>
       <a href="#sss">Gizlilik</a>
       <a href="#sss">KVKK Aydınlatma</a>
-      <a href="mailto:ozanbalcioglu@gmail.com">İletişim</a>
+      <a href="mailto:iletisim@finansnotum.com">İletişim</a>
     </div>
   </div>
   <div class="wrap legal">
@@ -544,6 +545,27 @@
 </footer>
 
 <script>
+  // Lansman aboneliği — API'ye kaydet
+  function subscribe(e){
+    e.preventDefault();
+    var email=document.getElementById('subEmail').value.trim();
+    var btn=e.target.querySelector('button');
+    document.getElementById('suberr').style.display='none';
+    btn.disabled=true; btn.textContent='Gönderiliyor…';
+    fetch('https://api.finansnotum.com/api/subscribe',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email})
+    }).then(function(r){
+      if(!r.ok) throw new Error('bad');
+      document.getElementById('subForm').style.display='none';
+      document.getElementById('ok').style.display='block';
+    }).catch(function(){
+      btn.disabled=false; btn.textContent='Beni bilgilendir';
+      document.getElementById('suberr').style.display='block';
+    });
+    return false;
+  }
+
   // FAQ akordeon
   document.querySelectorAll('.qa button').forEach(function(b){
     b.addEventListener('click',function(){
