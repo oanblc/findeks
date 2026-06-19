@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>FinansNotum — Yönetim Paneli</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root{--navy:#1E2A5E;--navy2:#162049;--teal:#2DD4BF;--tealD:#0F766E;--ink:#0F172A;
+    --muted:#64748B;--line:#E2E8F0;--bg:#F1F5F9;--card:#fff;--green:#22C55E;--red:#EF4444;--amber:#F59E0B}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font:inherit;cursor:pointer;border:none}
+  input,textarea{font:inherit}
+  a{color:var(--tealD)}
+  .hidden{display:none!important}
+
+  /* LOGIN */
+  .login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;
+    background:radial-gradient(900px 500px at 70% -10%,#2a3a78 0,var(--navy) 60%)}
+  .login{background:#fff;border-radius:20px;padding:34px;width:100%;max-width:380px;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;margin-bottom:4px}
+  .brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--teal),#0ea5a0);
+    display:grid;place-items:center;color:#053;font-weight:900}
+  .login h1{font-size:16px;color:var(--muted);font-weight:600;margin:14px 0 20px}
+  .fld{margin-bottom:14px}
+  .fld label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+  .fld input{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:15px}
+  .fld input:focus{outline:none;border-color:var(--teal)}
+  .btn{background:var(--teal);color:#053;font-weight:700;border-radius:11px;padding:12px 18px;width:100%;font-size:15px}
+  .btn:hover{background:#26c2af}
+  .btn.sm{width:auto;padding:8px 14px;font-size:13px;border-radius:9px}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  .btn.danger{background:#fee2e2;color:#b91c1c}
+  .btn.navy{background:var(--navy);color:#fff}
+  .err{color:var(--red);font-size:13.5px;margin-top:8px;min-height:18px}
+
+  /* APP */
+  header.top{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:0 20px;height:58px;position:sticky;top:0;z-index:20}
+  header.top .brand{color:#fff;font-size:18px}
+  header.top .who{font-size:13px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:14px}
+  .layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 58px)}
+  nav.side{background:#fff;border-right:1px solid var(--line);padding:14px 10px}
+  nav.side button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;
+    color:var(--ink);font-weight:600;font-size:14.5px;padding:11px 13px;border-radius:10px;margin-bottom:3px}
+  nav.side button:hover{background:var(--bg)}
+  nav.side button.active{background:var(--navy);color:#fff}
+  main{padding:24px;max-width:1100px}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}nav.side{display:flex;overflow-x:auto;border-right:none;border-bottom:1px solid var(--line)}nav.side button{white-space:nowrap}}
+  h2.pg{font-size:22px;font-weight:800;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:22px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .stat .k{font-size:13px;color:var(--muted);font-weight:600}
+  .stat .v{font-size:27px;font-weight:800;margin-top:4px;letter-spacing:-.5px}
+  .stat .d{font-size:12px;color:var(--green);font-weight:700;margin-top:2px}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+  .panel h3{font-size:15px;font-weight:800;margin-bottom:12px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .search{flex:1;min-width:180px;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:14px}
+  .search:focus{outline:none;border-color:var(--teal)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{color:var(--muted);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  td .em{font-weight:600}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#EEF2FF;color:var(--navy)}
+  .pill.green{background:#dcfce7;color:#15803d}.pill.gray{background:#f1f5f9;color:#64748b}
+  .pill.amber{background:#fef3c7;color:#b45309}
+  .creditbox{width:64px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:13px}
+  .muted{color:var(--muted)}
+  .empty{color:var(--muted);text-align:center;padding:30px;font-size:14px}
+  textarea.area{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:14.5px;min-height:150px;resize:vertical}
+  .toggle{display:inline-flex;align-items:center;gap:10px;font-weight:600}
+  .switch{width:46px;height:26px;border-radius:999px;background:#cbd5e1;position:relative;transition:.18s}
+  .switch.on{background:var(--green)}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.18s}
+  .switch.on::after{left:23px}
+  .health{display:flex;gap:18px;flex-wrap:wrap}
+  .hi{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+  .dot{width:10px;height:10px;border-radius:50%}.dot.ok{background:var(--green)}.dot.no{background:var(--red)}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;
+    padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:50;opacity:0;transition:.2s}
+  .toast.show{opacity:1}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginView" class="login-wrap">
+  <form class="login" onsubmit="return doLogin(event)">
+    <div class="brand"><span class="mark">F</span>FinansNotum</div>
+    <h1>Yönetim Paneli — Giriş</h1>
+    <div class="fld"><label>E-posta</label><input id="liEmail" type="email" required autocomplete="username"></div>
+    <div class="fld"><label>Şifre</label><input id="liPass" type="password" required autocomplete="current-password"></div>
+    <button class="btn" type="submit">Giriş yap</button>
+    <div class="err" id="liErr"></div>
+  </form>
+</div>
+
+<!-- APP -->
+<div id="appView" class="hidden">
+  <header class="top">
+    <div class="brand"><span class="mark">F</span>FinansNotum <span style="font-weight:600;font-size:13px;color:rgba(255,255,255,.6);margin-left:6px">Yönetim</span></div>
+    <div class="who"><span id="whoEmail"></span><button class="btn sm ghost" onclick="logout()">Çıkış</button></div>
+  </header>
+  <div class="layout">
+    <nav class="side" id="nav"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://api.finansnotum.com';
+const TOKEN_KEY = 'fn_admin_token';
+let token = localStorage.getItem(TOKEN_KEY) || '';
+let adminEmail = localStorage.getItem('fn_admin_email') || '';
+
+const TABS = [
+  ['panel','Panel'], ['aboneler','Aboneler'], ['kullanicilar','Kullanıcılar'],
+  ['satislar','Satışlar'], ['topluluk','Topluluk'], ['duyuru','Duyuru'], ['ayarlar','Ayarlar'],
+];
+let activeTab = 'panel';
+
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+function fmt(n){ return (n==null?'–':Number(n).toLocaleString('tr-TR')); }
+function money(n){ return '₺'+Number(n||0).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function dt(s){ if(!s) return '–'; const d=new Date(s); return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+async function api(path, opts){
+  opts = opts || {};
+  opts.headers = Object.assign({'Authorization':'Bearer '+token}, opts.headers||{});
+  if(opts.body && typeof opts.body!=='string'){ opts.headers['Content-Type']='application/json'; opts.body=JSON.stringify(opts.body); }
+  const r = await fetch(API+path, opts);
+  if(r.status===401||r.status===403){ logout(); throw new Error('Oturum sona erdi'); }
+  if(!r.ok){ let m='Hata'; try{ const j=await r.json(); m=(j.detail&&j.detail.message)||m; }catch(e){} throw new Error(m); }
+  const ct=r.headers.get('content-type')||''; return ct.includes('json')?r.json():r.text();
+}
+
+async function doLogin(e){
+  e.preventDefault();
+  const email=document.getElementById('liEmail').value.trim();
+  const pass=document.getElementById('liPass').value;
+  const err=document.getElementById('liErr'); err.textContent='';
+  try{
+    const r=await fetch(API+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pass})});
+    if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error((j.detail&&j.detail.message)||'Giriş başarısız'); }
+    const j=await r.json();
+    token=j.token; adminEmail=j.email;
+    localStorage.setItem(TOKEN_KEY,token); localStorage.setItem('fn_admin_email',adminEmail);
+    showApp();
+  }catch(ex){ err.textContent=ex.message; }
+  return false;
+}
+function logout(){ token=''; localStorage.removeItem(TOKEN_KEY); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); }
+
+function showApp(){
+  document.getElementById('loginView').classList.add('hidden');
+  document.getElementById('appView').classList.remove('hidden');
+  document.getElementById('whoEmail').textContent=adminEmail;
+  const nav=document.getElementById('nav');
+  nav.innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" class="${k===activeTab?'active':''}" onclick="go('${k}')">${l}</button>`).join('');
+  go(activeTab);
+}
+function go(tab){
+  activeTab=tab;
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  ({panel:renderPanel,aboneler:renderSubs,kullanicilar:renderUsers,satislar:renderSales,
+    topluluk:renderCommunity,duyuru:renderBroadcast,ayarlar:renderSettings}[tab])();
+}
+function setMain(html){ document.getElementById('main').innerHTML=html; }
+function loading(){ setMain('<div class="empty">Yükleniyor…</div>'); }
+
+// --- PANEL ---
+async function renderPanel(){
+  loading();
+  try{
+    const s=await api('/api/admin/stats');
+    const c=s.counts, h=s.health;
+    setMain(`
+      <h2 class="pg">Genel Bakış</h2>
+      <div class="sub">Özet metrikler · son 7 günde +${fmt(s.recent.subscribers)} abone, +${fmt(s.recent.users)} kullanıcı</div>
+      <div class="cards">
+        ${stat('Aboneler',fmt(c.subscribers),'+'+fmt(s.recent.subscribers)+' (7g)')}
+        ${stat('Kullanıcılar',fmt(c.users),'+'+fmt(s.recent.users)+' (7g)')}
+        ${stat('Gelir',money(s.revenue_try),fmt(c.purchases)+' satış')}
+        ${stat('Satılan kredi',fmt(c.credits_sold),'')}
+        ${stat('Topluluk cihazı',fmt(c.community_devices),'')}
+        ${stat('Bulut yedeği',fmt(c.cloud_backups),'')}
+      </div>
+      <div class="panel">
+        <h3>Sistem sağlığı</h3>
+        <div class="health">
+          ${hi('AI (Gemini)',h.gemini)}
+          ${hi('E-posta (SMTP)',h.smtp)}
+          ${hi('Teklifler açık',h.offers_enabled)}
+        </div>
+      </div>`);
+  }catch(e){ setMain(err(e)); }
+}
+function stat(k,v,d){ return `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div>${d?`<div class="d">${d}</div>`:''}</div>`; }
+function hi(label,ok){ return `<div class="hi"><span class="dot ${ok?'ok':'no'}"></span>${label}</div>`; }
+function err(e){ return `<div class="panel"><div class="empty" style="color:var(--red)">${esc(e.message||'Hata')}</div></div>`; }
+
+// --- ABONELER ---
+let subQ='';
+async function renderSubs(){
+  loading();
+  try{
+    const d=await api('/api/admin/subscribers?limit=2000'+(subQ?'&q='+encodeURIComponent(subQ):''));
+    const rows=d.subscribers;
+    setMain(`
+      <h2 class="pg">Aboneler</h2>
+      <div class="sub">Toplam ${fmt(d.total)} lansman abonesi</div>
+      <div class="panel">
+        <div class="row">
+          <input class="search" placeholder="E-posta ara…" value="${esc(subQ)}" oninput="subQ=this.value" onkeydown="if(event.key==='Enter')renderSubs()">
+          <button class="btn sm navy" onclick="renderSubs()">Ara</button>
+          <button class="btn sm ghost" onclick="downloadCsv()">CSV indir</button>
+        </div>
+        ${rows.length?`<table><thead><tr><th>E-posta</th><th>Kaynak</th><th>Tarih</th><th></th></tr></thead>
+          <tbody>${rows.map(r=>`<tr>
+            <td class="em">${esc(r.email)}</td>
+            <td><span class="pill gray">${esc(r.source)}</span></td>
+            <td class="muted">${dt(r.created_at)}</td>
+            <td><button class="btn sm danger" onclick="delSub(${r.id})">Sil</button></td>
+          </tr>`).join('')}</tbody></table>`:'<div class="empty">Henüz abone yok.</div>'}
+      </div>`);
+  }catch(e){ setMain(err(e)); }
+}
+async function delSub(id){ if(!confirm('Bu aboneyi silmek istiyor musunuz?'))return; try{ await api('/api/admin/subscribers/'+id,{method:'DELETE'}); toast('Abone silindi'); renderSubs(); }catch(e){ toast(e.message);} }
+async function downloadCsv(){
+  try{ const r=await fetch(API+'/api/admin/subscribers.csv',{headers:{'Authorization':'Bearer '+token}});
+    const blob=await r.blob(); const u=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=u; a.download='aboneler.csv'; a.click(); URL.revokeObjectURL(u);
+  }catch(e){ toast('CSV indirilemedi'); }
+}
+
+// --- KULLANICILAR ---
+let userQ='';
+async function renderUsers(){
+  loading();
+  try{
+    const d=await api('/api/admin/users?limit=500'+(userQ?'&q='+encodeURIComponent(userQ):''));
+    const rows=d.users;
+    setMain(`
+      <h2 class="pg">Kullanıcılar</h2>
+      <div class="sub">Toplam ${fmt(d.total)} kayıtlı hesap</div>
+      <div class="panel">
+        <div class="row">
+          <input class="search" placeholder="E-posta ara…" value="${esc(userQ)}" oninput="userQ=this.value" onkeydown="if(event.key==='Enter')renderUsers()">
+          <button class="btn sm navy" onclick="renderUsers()">Ara</button>
+        </div>
+        ${rows.length?`<table><thead><tr><th>E-posta</th><th>Giriş</th><th>Kredi</th><th>Yedek</th><th>Kayıt</th><th></th></tr></thead>
+          <tbody>${rows.map(u=>`<tr>
+            <td class="em">${esc(u.email||'(anonim)')}</td>
+            <td><span class="pill">${esc(u.auth)}</span></td>
+            <td><input class="creditbox" type="number" min="0" value="${u.credits}" id="cr_${u.id}">
+                <button class="btn sm ghost" onclick="setCredits('${u.id}')">Kaydet</button></td>
+            <td>${u.has_backup?'<span class="pill green">var</span>':'<span class="pill gray">yok</span>'}</td>
+            <td class="muted">${dt(u.created_at)}</td>
+            <td><button class="btn sm danger" onclick="delUser('${u.id}',${JSON.stringify(esc(u.email||''))})">Sil</button></td>
+          </tr>`).join('')}</tbody></table>`:'<div class="empty">Henüz kullanıcı yok.</div>'}
+      </div>`);
+  }catch(e){ setMain(err(e)); }
+}
+async function setCredits(uid){ const v=parseInt(document.getElementById('cr_'+uid).value||'0',10);
+  try{ const r=await api('/api/admin/users/'+uid+'/credits',{method:'POST',body:{credits:v}}); toast('Kredi güncellendi: '+r.credits); }catch(e){ toast(e.message);} }
+async function delUser(uid,email){ if(!confirm('"'+email+'" kullanıcısını ve bulut yedeğini KALICI silmek istiyor musunuz? (KVKK)'))return;
+  try{ await api('/api/admin/users/'+uid,{method:'DELETE'}); toast('Kullanıcı silindi'); renderUsers(); }catch(e){ toast(e.message);} }
+
+// --- SATIŞLAR ---
+async function renderSales(){
+  loading();
+  try{
+    const d=await api('/api/admin/purchases');
+    const sum=d.summary, prices=d.prices||{};
+    setMain(`
+      <h2 class="pg">Satışlar & Gelir</h2>
+      <div class="sub">Toplam gelir: <b>${money(d.revenue_try)}</b></div>
+      <div class="panel">
+        <h3>Ürün bazında</h3>
+        ${sum.length?`<table><thead><tr><th>Ürün</th><th>Adet</th><th>Birim fiyat</th><th>Kredi</th><th>Tutar</th></tr></thead>
+          <tbody>${sum.map(p=>`<tr><td class="em">${esc(p.product_id)}</td><td>${fmt(p.count)}</td>
+            <td>${money(prices[p.product_id]||0)}</td><td>${fmt(p.credits)}</td>
+            <td class="em">${money((prices[p.product_id]||0)*p.count)}</td></tr>`).join('')}</tbody></table>`
+          :'<div class="empty">Henüz satış yok.</div>'}
+      </div>
+      <div class="panel">
+        <h3>Son işlemler</h3>
+        ${d.purchases.length?`<table><thead><tr><th>İşlem</th><th>Kullanıcı</th><th>Ürün</th><th>Kredi</th><th>Tarih</th></tr></thead>
+          <tbody>${d.purchases.slice(0,100).map(p=>`<tr><td class="muted" style="font-size:12px">${esc(p.transaction_id.slice(0,16))}…</td>
+            <td class="muted" style="font-size:12px">${esc((p.user_id||'').slice(0,10))}…</td><td>${esc(p.product_id)}</td>
+            <td>${fmt(p.credits)}</td><td class="muted">${dt(p.created_at)}</td></tr>`).join('')}</tbody></table>`
+          :'<div class="empty">İşlem yok.</div>'}
+      </div>`);
+  }catch(e){ setMain(err(e)); }
+}
+
+// --- TOPLULUK ---
+async function renderCommunity(){
+  loading();
+  try{
+    const d=await api('/api/admin/community');
+    setMain(`
+      <h2 class="pg">Topluluk Etki Analizi</h2>
+      <div class="sub">${fmt(d.devices)} anonim cihaz · güven için min. ${d.min_sample} gözlem</div>
+      <div class="panel">
+        ${d.ranked.length?`<table><thead><tr><th>Aksiyon</th><th>Ortalama not etkisi</th><th>Gözlem</th></tr></thead>
+          <tbody>${d.ranked.map(a=>`<tr><td class="em">${esc(a.label)}</td>
+            <td><span class="pill ${a.avg_delta>=0?'green':'amber'}">${a.avg_delta>=0?'+':''}${a.avg_delta}</span></td>
+            <td>${a.n}${a.n<d.min_sample?' <span class="muted">(yetersiz)</span>':''}</td></tr>`).join('')}</tbody></table>`
+          :'<div class="empty">Henüz yeterli topluluk verisi yok.</div>'}
+      </div>`);
+  }catch(e){ setMain(err(e)); }
+}
+
+// --- DUYURU (broadcast) ---
+async function renderBroadcast(){
+  let total=0; try{ total=(await api('/api/admin/stats')).counts.subscribers; }catch(e){}
+  setMain(`
+    <h2 class="pg">Toplu Duyuru</h2>
+    <div class="sub">Tüm abonelere (${fmt(total)} kişi) e-posta gönderin. Her alıcıya ayrı gönderilir (liste gizli).</div>
+    <div class="panel">
+      <div class="fld" style="margin-bottom:14px"><label style="font-size:13px;font-weight:600;color:var(--muted)">Konu</label>
+        <input id="bcSubject" class="search" style="width:100%" placeholder="Örn. FinansNotum yayında!"></div>
+      <div class="fld"><label style="font-size:13px;font-weight:600;color:var(--muted)">İçerik (her satır bir paragraf)</label>
+        <textarea id="bcBody" class="area" placeholder="Merhaba,&#10;&#10;Uygulamamız App Store ve Google Play'de yayında..."></textarea></div>
+      <div class="note">Düz metin yazın; markalı HTML şablonuna otomatik sarılır.</div>
+      <div class="row" style="margin-top:16px;margin-bottom:0">
+        <input id="bcTest" class="search" style="max-width:240px" placeholder="Test e-postası" value="${esc(adminEmail)}">
+        <button class="btn sm ghost" onclick="sendBroadcast(true)">Test gönder</button>
+        <button class="btn sm navy" onclick="sendBroadcast(false)">Tümüne gönder (${fmt(total)})</button>
+      </div>
+    </div>`);
+}
+async function sendBroadcast(isTest){
+  const subject=document.getElementById('bcSubject').value.trim();
+  const body=document.getElementById('bcBody').value.trim();
+  if(!subject||!body){ toast('Konu ve içerik gerekli'); return; }
+  const payload={subject,body};
+  if(isTest){ const t=document.getElementById('bcTest').value.trim(); if(!t){toast('Test adresi gir');return;} payload.test_to=t; }
+  else if(!confirm('Tüm abonelere göndermek istediğinize emin misiniz?')) return;
+  try{ const r=await api('/api/admin/broadcast',{method:'POST',body:payload});
+    toast(isTest?('Test gönderildi: '+payload.test_to):('Gönderim başladı: '+r.recipients+' alıcı'));
+  }catch(e){ toast(e.message); }
+}
+
+// --- AYARLAR ---
+async function renderSettings(){
+  loading();
+  try{
+    const s=await api('/api/admin/settings');
+    setMain(`
+      <h2 class="pg">Ayarlar</h2>
+      <div class="sub">Çalışma-zamanı özellik anahtarları</div>
+      <div class="panel">
+        <div class="toggle" onclick="toggleOffers(this)">
+          <div class="switch ${s.offers_enabled?'on':''}" id="offSwitch"></div>
+          <div><div>Lead-gen teklifleri</div><div class="note" style="margin:0">Borç konsolidasyon/transfer yönlendirmeleri (yeni kredi değil). Gerçek ortak yokken kapalı tutun.</div></div>
+        </div>
+      </div>`);
+  }catch(e){ setMain(err(e)); }
+}
+async function toggleOffers(){
+  const sw=document.getElementById('offSwitch'); const next=!sw.classList.contains('on');
+  try{ await api('/api/admin/settings',{method:'POST',body:{offers_enabled:next}}); sw.classList.toggle('on',next); toast('Kaydedildi'); }catch(e){ toast(e.message); }
+}
+
+// init
+if(token){ showApp(); } else { document.getElementById('loginView').classList.remove('hidden'); }
+</script>
+</body>
+</html>
