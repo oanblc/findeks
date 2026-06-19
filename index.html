@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinansNotum — Kredi notunuzu yükseltin, borçtan planlı çıkın</title>
+<meta name="description" content="FinansNotum; kredi notunuzu yükseltmenize ve borcunuzu planlı kapatmanıza yardımcı olan mobil uygulama. Verileriniz cihazınızda, KVKK uyumlu, bilgilendirme amaçlı.">
+<meta property="og:title" content="FinansNotum">
+<meta property="og:description" content="Kredi notunuzu yükseltin, borçtan planlı çıkın. Gizlilik öncelikli mobil uygulama.">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --navy:#1E2A5E; --navy2:#162049; --teal:#2DD4BF; --tealD:#0F766E; --tealSoft:#F0FDFA;
+    --amber:#F59E0B; --ink:#0F172A; --muted:#64748B; --line:#E2E8F0; --bg:#F8FAFC;
+    --card:#FFFFFF; --navySoft:#EEF2FF; --green:#22C55E;
+    --maxw:1120px; --r:20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font:inherit;
+    font-weight:700;border-radius:14px;padding:14px 22px;transition:.18s}
+  .btn-primary{background:var(--teal);color:#053}
+  .btn-primary:hover{background:#26c2af;transform:translateY(-1px)}
+  .btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.25)}
+  .btn-ghost:hover{background:rgba(255,255,255,.18)}
+  .pill{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.4px;
+    padding:5px 11px;border-radius:999px;background:var(--navySoft);color:var(--navy)}
+
+  /* NAV */
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(30,42,94,.92);
+    backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:19px;letter-spacing:-.3px}
+  .brand .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--teal),#0ea5a0);
+    display:grid;place-items:center;color:#053;font-weight:900;font-size:16px}
+  .nav-links{display:flex;align-items:center;gap:26px}
+  .nav-links a{color:rgba(255,255,255,.82);font-weight:600;font-size:15px}
+  .nav-links a:hover{color:#fff}
+  .nav-links .btn{padding:10px 18px}
+  .menu-btn{display:none;background:none;border:none;color:#fff;font-size:26px;cursor:pointer}
+  @media(max-width:760px){.nav-links{display:none}.menu-btn{display:block}}
+
+  /* HERO */
+  .hero{background:radial-gradient(1200px 500px at 80% -10%,#2a3a78 0,var(--navy) 55%);color:#fff;
+    padding:64px 0 72px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  .hero h1{font-size:48px;line-height:1.08;letter-spacing:-1px;font-weight:800}
+  .hero h1 .hl{color:var(--teal)}
+  .hero p.sub{margin-top:18px;font-size:19px;color:rgba(255,255,255,.8);max-width:520px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+  .store{display:inline-flex;align-items:center;gap:10px;background:#0d1530;color:#fff;border:1px solid rgba(255,255,255,.16);
+    border-radius:14px;padding:10px 18px;font-weight:700;position:relative}
+  .store small{display:block;font-size:10px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.5px}
+  .store .soon{position:absolute;top:-9px;right:-9px;background:var(--amber);color:#3a2700;font-size:9px;
+    font-weight:900;padding:2px 7px;border-radius:999px;letter-spacing:.5px}
+  .trust{margin-top:22px;font-size:13.5px;color:rgba(255,255,255,.7)}
+  .trust b{color:var(--teal)}
+  @media(max-width:880px){.hero-grid{grid-template-columns:1fr;text-align:center}
+    .hero h1{font-size:36px}.cta,.trust{justify-content:center}.hero p.sub{margin-inline:auto}
+    .phone-wrap{justify-self:center}.phone{margin:0 auto}}
+
+  /* PHONE MOCK — vektör iPhone çerçevesi (şeffaf ekranlı overlay) */
+  .phone-wrap{justify-self:end;position:relative}
+  .device{position:relative;width:300px;height:649px;
+    filter:drop-shadow(0 45px 70px rgba(0,0,0,.55)) drop-shadow(0 14px 28px rgba(0,0,0,.4))}
+  .ui{position:absolute;left:10px;top:10px;width:280px;height:629px;
+    border-radius:43px;overflow:hidden;background:var(--bg);z-index:1}
+  .frame-svg{position:absolute;inset:0;width:300px;height:649px;z-index:2;
+    pointer-events:none;overflow:visible}
+  .statusbar{background:var(--navy);color:#fff;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 26px 4px;font-size:14px;font-weight:600;letter-spacing:.2px}
+  .statusbar .sicons{display:flex;align-items:center;gap:6px}
+  .statusbar svg{display:block;fill:#fff}
+  .scr-head{background:var(--navy);color:#fff;padding:4px 18px 22px}
+  .scr-head .t{font-size:13px;color:rgba(255,255,255,.7)}
+  .gauge{margin:10px auto 4px;width:150px;height:78px;position:relative}
+  .gauge svg{width:100%;height:100%}
+  .gauge .val{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:30px;font-weight:800}
+  .gauge .band{position:absolute;bottom:-14px;left:0;right:0;text-align:center;font-size:11px;color:var(--teal);font-weight:700}
+  .scr-body{padding:14px}
+  .mini{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+  .mini .mh{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);font-weight:600}
+  .mini .mv{font-size:16px;font-weight:800;margin-top:2px}
+  .delta{color:var(--green);font-weight:800;font-size:12.5px}
+  .task{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:5px 0;color:var(--ink)}
+  .task .ck{width:18px;height:18px;border-radius:6px;background:var(--teal);color:#053;display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}
+  .task.off .ck{background:#fff;border:1.6px solid var(--line)}
+
+  /* SECTIONS */
+  section{padding:74px 0}
+  .eyebrow{color:var(--tealD);font-weight:800;letter-spacing:.6px;font-size:13px;text-transform:uppercase}
+  h2.sec{font-size:33px;letter-spacing:-.6px;font-weight:800;margin-top:8px}
+  .lead{color:var(--muted);font-size:18px;margin-top:10px;max-width:640px}
+  .center{text-align:center}.center .lead{margin-inline:auto}
+
+  .feat-group{margin-top:40px}
+  .feat-group h3{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:800;
+    color:var(--navy);background:var(--navySoft);padding:7px 14px;border-radius:999px;margin-bottom:18px}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:880px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;
+    transition:.18s}
+  .card:hover{box-shadow:0 12px 30px rgba(15,23,42,.07);transform:translateY(-2px)}
+  .card .ic{width:46px;height:46px;border-radius:13px;background:var(--tealSoft);display:grid;place-items:center;
+    margin-bottom:14px}
+  .card .ic svg{width:23px;height:23px;fill:none;stroke:var(--tealD);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .feat-group h3 svg{width:16px;height:16px;fill:none;stroke:var(--navy);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .store svg{fill:#fff}
+  .card h4{font-size:17px;font-weight:800}
+  .card p{color:var(--muted);font-size:14.5px;margin-top:6px}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+  @media(max-width:880px){.steps{grid-template-columns:1fr}}
+  .step{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:26px;position:relative}
+  .step .n{width:38px;height:38px;border-radius:11px;background:var(--navy);color:#fff;font-weight:800;
+    display:grid;place-items:center;font-size:18px;margin-bottom:14px}
+  .step h4{font-size:18px;font-weight:800}
+  .step p{color:var(--muted);font-size:14.5px;margin-top:6px}
+
+  /* PRIVACY */
+  .privacy{background:var(--navy);color:#fff;border-radius:28px;padding:50px;margin:0 22px}
+  .privacy .wrap2{max-width:var(--maxw);margin:0 auto}
+  .privacy h2{font-size:30px;font-weight:800;letter-spacing:-.5px}
+  .privacy .plist{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+  @media(max-width:760px){.privacy{padding:34px 22px}.privacy .plist{grid-template-columns:1fr}}
+  .pitem{display:flex;gap:12px;align-items:flex-start}
+  .pitem .pc{width:26px;height:26px;border-radius:8px;background:rgba(45,212,191,.18);color:var(--teal);
+    display:grid;place-items:center;font-weight:900;flex:none;margin-top:2px}
+  .pitem p{color:rgba(255,255,255,.82);font-size:15px}
+  .pitem b{color:#fff}
+
+  /* FAQ */
+  .faq{max-width:780px;margin:36px auto 0}
+  .qa{border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:12px;overflow:hidden}
+  .qa button{width:100%;text-align:left;background:none;border:none;cursor:pointer;font:inherit;
+    font-weight:700;font-size:16.5px;color:var(--ink);padding:18px 20px;display:flex;justify-content:space-between;gap:14px;align-items:center}
+  .qa .ans{max-height:0;overflow:hidden;transition:max-height .28s ease;color:var(--muted);font-size:15px}
+  .qa .ans p{padding:0 20px 18px}
+  .qa.open .ans{max-height:320px}
+  .qa .chev{transition:.25s;color:var(--muted);flex:none}
+  .qa.open .chev{transform:rotate(180deg)}
+
+  /* CTA / EMAIL */
+  .signup{background:linear-gradient(135deg,#22305f,var(--navy));color:#fff;border-radius:28px;
+    padding:50px;margin:0 22px;text-align:center}
+  .signup h2{font-size:30px;font-weight:800;letter-spacing:-.5px}
+  .signup p{color:rgba(255,255,255,.78);margin-top:10px;max-width:520px;margin-inline:auto}
+  .frm{display:flex;gap:10px;max-width:460px;margin:24px auto 0}
+  .frm input{flex:1;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;
+    border-radius:13px;padding:14px 16px;font:inherit;font-size:15px}
+  .frm input::placeholder{color:rgba(255,255,255,.55)}
+  .frm input:focus{outline:none;border-color:var(--teal)}
+  .ok{display:none;margin-top:16px;color:var(--teal);font-weight:700}
+  .note{font-size:12.5px;color:rgba(255,255,255,.55);margin-top:14px}
+  @media(max-width:560px){.frm{flex-direction:column}.signup,.privacy{padding:32px 20px}}
+
+  /* FOOTER */
+  footer{background:var(--navy2);color:rgba(255,255,255,.72);padding:54px 0 30px;margin-top:74px}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}
+  @media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr}}
+  footer h5{color:#fff;font-size:13px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;font-weight:800}
+  footer a{display:block;color:rgba(255,255,255,.72);font-size:14.5px;padding:5px 0}
+  footer a:hover{color:#fff}
+  .foot-brand p{font-size:14px;max-width:300px;margin-top:12px;color:rgba(255,255,255,.6)}
+  .legal{border-top:1px solid rgba(255,255,255,.1);margin-top:36px;padding-top:22px;
+    font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.7}
+  .legal b{color:rgba(255,255,255,.7)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a href="#" class="brand"><span class="mark">F</span>FinansNotum</a>
+    <nav class="nav-links">
+      <a href="#ozellikler">Özellikler</a>
+      <a href="#nasil">Nasıl çalışır</a>
+      <a href="#sss">SSS</a>
+      <a href="#indir" class="btn btn-primary">Uygulamayı al</a>
+    </nav>
+    <button class="menu-btn" onclick="document.querySelector('.nav-links').style.display='flex'">☰</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">Yakında · iOS &amp; Android</span>
+      <h1 style="margin-top:16px">Kredi notunuzu yükseltin,<br><span class="hl">borçtan planlı çıkın.</span></h1>
+      <p class="sub">Tüm borçlarınızı tek planda toplayın, notunuzu en çok hangi adımın
+        yükselteceğini görün ve ilerlemenizi her ay somut rakamlarla izleyin — tahmine değil,
+        kendi verinize dayalı bir yol haritası.</p>
+      <div class="cta" id="indir">
+        <a class="store" href="#kayit"><svg width="20" height="24" viewBox="0 0 24 24"><path d="M16.36 1.43c0 1.14-.42 2.2-1.12 2.99-.85.96-2.24 1.7-3.4 1.61-.14-1.13.43-2.33 1.13-3.08.79-.85 2.16-1.48 3.39-1.52zM20.66 16.92c-.6 1.39-.89 2-1.66 3.23-1.08 1.72-2.6 3.86-4.49 3.88-1.67.02-2.1-1.09-4.37-1.08-2.27.01-2.74 1.1-4.41 1.09-1.89-.02-3.33-1.95-4.41-3.67-3.02-4.81-3.34-10.45-1.47-13.45 1.33-2.13 3.43-3.38 5.4-3.38 2.01 0 3.27 1.1 4.93 1.1 1.61 0 2.59-1.1 4.91-1.1 1.76 0 3.62.96 4.95 2.62-4.35 2.38-3.64 8.6.99 10.13z"/></svg><span><small>YAKINDA</small>App Store</span><span class="soon">YAKINDA</span></a>
+        <a class="store" href="#kayit"><svg width="20" height="22" viewBox="0 0 24 24"><path d="M3.6 1.85a1.6 1.6 0 0 0-.6 1.25v17.8c0 .52.24.98.63 1.24L13.2 12 3.6 1.85zm11.04 8.9 2.78-2.78L5.9 1.3c-.36-.2-.74-.25-1.08-.16l9.82 9.6zm0 2.5L4.83 22.86c.34.09.72.04 1.08-.16l11.5-6.66-2.77-2.79zm5.86-3.34-2.46-1.42-3.05 3.06 3.05 3.05 2.47-1.43c.86-.5.86-1.79-.01-2.84z"/></svg><span><small>YAKINDA</small>Google Play</span><span class="soon">YAKINDA</span></a>
+      </div>
+      <p class="trust"><b>•</b> Verileriniz cihazınızda kalır &nbsp; <b>•</b> KVKK uyumlu &nbsp; <b>•</b> Bilgilendirme amaçlıdır</p>
+    </div>
+
+    <!-- phone mock — vektör iPhone çerçevesi + canlı UI (şeffaf ekran overlay) -->
+    <div class="phone-wrap">
+     <div class="device">
+      <div class="ui">
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="sicons">
+            <svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="6" rx="1"/><rect x="10" y="2.5" width="3" height="8.5" rx="1"/><rect x="15" y="0" width="3" height="11" rx="1"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.6c2.3 0 4.4.9 6 2.4l-1.3 1.4A6.6 6.6 0 0 0 8 4.5 6.6 6.6 0 0 0 3.3 6.4L2 5C3.6 3.5 5.7 2.6 8 2.6Zm0 3.1c1.4 0 2.7.6 3.7 1.5l-1.4 1.4A2.9 2.9 0 0 0 8 8.7c-.8 0-1.6.3-2.3.9L4.3 8.2A5 5 0 0 1 8 5.7Zm0 3.1 1.6 1.6L8 12 6.4 10.4 8 8.8Z"/></svg>
+            <svg width="26" height="12" viewBox="0 0 26 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3" fill="none" stroke="#fff" stroke-opacity="0.45"/><rect x="2" y="2" width="18" height="8" rx="1.6"/><rect x="23" y="3.5" width="1.8" height="5" rx="0.9" fill-opacity="0.5"/></svg>
+          </span>
+        </div>
+        <div class="scr-head">
+          <div class="t">Kredi notunuz</div>
+          <div class="gauge">
+            <svg viewBox="0 0 150 80">
+              <path d="M10 75 A65 65 0 0 1 140 75" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="11" stroke-linecap="round"/>
+              <path d="M10 75 A65 65 0 0 1 122 33" fill="none" stroke="#2DD4BF" stroke-width="11" stroke-linecap="round"/>
+            </svg>
+            <div class="val" style="color:#fff">1.247</div>
+            <div class="band">İYİ · son ay +27</div>
+          </div>
+        </div>
+        <div class="scr-body">
+          <div class="mini">
+            <div class="mh"><span>Toplam borç</span><span class="delta">↓ %18</span></div>
+            <div class="mv">45.438 TL → 37.260 TL</div>
+          </div>
+          <div class="mini">
+            <div class="mh"><span>Bu ay yap</span><span>2/3</span></div>
+            <div class="task"><span class="ck">✓</span>Kart kullanımını %50 altına çek</div>
+            <div class="task"><span class="ck">✓</span>Otomatik ödeme talimatı ver</div>
+            <div class="task off"><span class="ck"></span>Tam ödemeyi sürdür</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- vektör çerçeve: titanyum gövde + siyah bezel + Dynamic Island + yan tuşlar -->
+      <svg class="frame-svg" viewBox="0 0 300 649" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="titan" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#eaeaef"/><stop offset=".12" stop-color="#9a9aa2"/>
+            <stop offset=".26" stop-color="#d8d8dd"/><stop offset=".42" stop-color="#7b7b84"/>
+            <stop offset=".58" stop-color="#c2c2c9"/><stop offset=".74" stop-color="#6d6d76"/>
+            <stop offset=".88" stop-color="#b7b7be"/><stop offset="1" stop-color="#5a5a62"/>
+          </linearGradient>
+          <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+            <stop offset=".5" stop-color="#ffffff" stop-opacity=".15"/>
+            <stop offset="1" stop-color="#ffffff" stop-opacity=".6"/>
+          </linearGradient>
+          <linearGradient id="btn" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#6c6c74"/><stop offset="1" stop-color="#2c2c31"/>
+          </linearGradient>
+          <mask id="hole">
+            <rect width="300" height="649" fill="#fff"/>
+            <rect x="10" y="10" width="280" height="629" rx="43" fill="#000"/>
+          </mask>
+          <clipPath id="scr"><rect x="10" y="10" width="280" height="629" rx="43"/></clipPath>
+        </defs>
+        <!-- yan tuşlar (gövdenin altında) -->
+        <rect x="-2" y="120" width="4" height="30" rx="2" fill="url(#btn)"/>
+        <rect x="-2" y="176" width="4" height="48" rx="2" fill="url(#btn)"/>
+        <rect x="-2" y="238" width="4" height="48" rx="2" fill="url(#btn)"/>
+        <rect x="298" y="192" width="4" height="80" rx="2" fill="url(#btn)"/>
+        <!-- titanyum gövde (ekran kesik) -->
+        <rect width="300" height="649" rx="60" fill="url(#titan)" mask="url(#hole)"/>
+        <!-- siyah bezel halkası -->
+        <rect x="7" y="7" width="286" height="635" rx="48" fill="#050505" mask="url(#hole)"/>
+        <!-- dış kenar rim-light -->
+        <rect x="1" y="1" width="298" height="647" rx="59" fill="none" stroke="url(#rim)" stroke-width="1.5"/>
+        <!-- ekran camı hafif yansıma -->
+        <g clip-path="url(#scr)">
+          <path d="M-10 10 L120 10 L30 250 L-10 150 Z" fill="#fff" opacity=".05"/>
+        </g>
+        <!-- Dynamic Island + kamera -->
+        <rect x="108" y="14" width="84" height="27" rx="13.5" fill="#000"/>
+        <circle cx="180" cy="27.5" r="4.2" fill="#10131f"/>
+        <circle cx="180" cy="27.5" r="1.6" fill="#2b3350"/>
+      </svg>
+     </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="ozellikler">
+  <div class="wrap center">
+    <span class="eyebrow">Özellikler</span>
+    <h2 class="sec">Notunuzu yükseltmek ve borcunuzu kapatmak için ihtiyacınız olan her şey</h2>
+    <p class="lead">Kredi raporunuz olsun ya da olmasın çalışır. Önce net bir plan ve sade bir
+      anlatım; dilerseniz raporunuza özel kişisel analiz.</p>
+  </div>
+
+  <div class="wrap">
+    <!-- NOT -->
+    <div class="feat-group">
+      <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3"/></svg> Notunuz</h3>
+      <div class="cards">
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg></div>
+          <h4>Kredi raporu analizi</h4>
+          <p>Findeks kredi raporunuzu (PDF) isteğe bağlı ekleyin; uygulama notunuzu oluşturan
+            kalemleri ayrıştırıp durumunuza özel bir tablo çıkarır. Eklemek zorunlu değildir.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M9 4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><rect x="9" y="2.5" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div>
+          <h4>Size özel görevler</h4>
+          <p>Etkisi en yüksekten en düşüğe sıralanmış not yükseltme adımları; her birinin tahmini
+            puan etkisiyle. Tamamladıklarınızı işaretleyin.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1.5" y1="14" x2="6.5" y2="14"/><line x1="9.5" y1="8" x2="14.5" y2="8"/><line x1="17.5" y1="16" x2="22.5" y2="16"/></svg></div>
+          <h4>Skor simülatörü</h4>
+          <p>"Bu kartı kapatırsam", "borcu yarıya indirirsem" gibi senaryoların notunuza olası
+            etkisini önceden görün — gerçekçi aralıklarla.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BORÇ -->
+    <div class="feat-group">
+      <h3><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Borcunuz</h3>
+      <div class="cards">
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="9"/></svg></div>
+          <h4>Borç ödeme planı</h4>
+          <p>Çığ (en yüksek faiz önce) veya kar topu (en küçük borç önce) yöntemiyle ödeme sırası,
+            toplam ödeme ve borçsuz olacağınız tarih — sade biçimde.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13.5"/><line x1="12" y1="17.5" x2="12.01" y2="17.5"/></svg></div>
+          <h4>Asgari ödeme tuzağı simülatörü</h4>
+          <p>Yalnızca asgari ödediğinizde borcun ne kadar uzadığını ve toplamda ne ödeyeceğinizi
+            gösterir — tuzağa düşmeden plana sadık kalın.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+          <h4>Manuel borç girişi</h4>
+          <p>Kredi raporu olmadan da borçlarınızı elle ekleyin, planınızı oluşturun.
+            Rapor zorunlu değildir.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAKİP -->
+    <div class="feat-group">
+      <h3><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Takip</h3>
+      <div class="cards">
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          <h4>Takvim + hatırlatıcı</h4>
+          <p>Ödeme günlerinde kişisel bildirim alın; kaç gün önce hatırlatılacağını siz seçin.
+            Planınızdaki tutarı zamanında ödeyin.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+          <h4>İlerleme takibi</h4>
+          <p>Kredi notunuzun ve borcunuzun zaman içindeki değişimini grafikte görün:
+            "borcunuzun %X'i eridi", "notunuz +27" gibi somut ilerleme.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 15l2 2 4-4"/></svg></div>
+          <h4>Bu ayın yapılacakları</h4>
+          <p>Net ve işaretlenebilir aylık adımlar. Bu ay neye odaklanmanız, neden kaçınmanız
+            gerektiğini tek bakışta görün.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AKILLI -->
+    <div class="feat-group">
+      <h3><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Akıllı &amp; gizli</h3>
+      <div class="cards">
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1.5" x2="9" y2="4"/><line x1="15" y1="1.5" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="22.5"/><line x1="15" y1="20" x2="15" y2="22.5"/><line x1="20" y1="9" x2="22.5" y2="9"/><line x1="20" y1="14" x2="22.5" y2="14"/><line x1="1.5" y1="9" x2="4" y2="9"/><line x1="1.5" y1="14" x2="4" y2="14"/></svg></div>
+          <h4>Arka planda yapay zekâ analizi</h4>
+          <p>Güncel BDDK/TCMB kurallarına dayalı, notunuzu yükseltmeye odaklı önceliklendirilmiş
+            bir aksiyon yorumu — sohbet etmenize gerek yok, arka planda hazırlanır.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h4>Topluluk etki analizi</h4>
+          <p>Anonim ve isteğe bağlı. "Notunu yükseltenler ne yaptı?" verisinden hangi adımların
+            gerçekten işe yaradığını öğrenin — isim veya e-posta paylaşılmaz.</p>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+          <h4>Hesap &amp; bulut yedeği (opsiyonel)</h4>
+          <p>İsterseniz hesap açıp ilerlemenizi yedekleyin, yeni telefonda geri yükleyin.
+            Hesap zorunlu değil; misafir kullanımda her şey yalnızca cihazınızda kalır.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="nasil" style="background:#fff">
+  <div class="wrap center">
+    <span class="eyebrow">Nasıl çalışır</span>
+    <h2 class="sec">Üç adımda planlı bir başlangıç</h2>
+  </div>
+  <div class="wrap">
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <h4>Borçlarınızı tanımlayın</h4>
+        <p>Kredi raporunuzun PDF'ini yükleyin — ya da raporunuz olmadan borçlarınızı elle girin.
+          Seçim sizin.</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <h4>Size özel analiz ve plan</h4>
+        <p>Durumunuza göre önceliklendirilmiş görevler ve bir borç ödeme planı oluşturulur; etkisi
+          en yüksek adımdan başlayın.</p>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <h4>Her ay ilerlemenizi görün</h4>
+        <p>Notunuzun yükselişini ve borcunuzun erimesini takip edin. Hatırlatıcılar sizi planınıza
+          sadık tutar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section style="padding:36px 0">
+  <div class="privacy">
+    <div class="wrap2">
+      <span class="eyebrow" style="color:var(--teal)">Gizlilik</span>
+      <h2 style="margin-top:8px">Verileriniz sizin. Varsayılan olarak cihazınızda.</h2>
+      <p class="lead" style="color:rgba(255,255,255,.78)">Gizlilik bir özellik değil, varsayılandır.
+        Verilerinizi istediğiniz an silebilirsiniz.</p>
+      <div class="plist">
+        <div class="pitem"><span class="pc">✓</span><p><b>Kredi raporu verileriniz yalnızca cihazınızda/oturumunuzda</b> tutulur, sunucuda saklanmaz.</p></div>
+        <div class="pitem"><span class="pc">✓</span><p><b>Ham PDF saklanmaz</b> — analiz biter, dosya tutulmaz.</p></div>
+        <div class="pitem"><span class="pc">✓</span><p><b>Hesap ve bulut yedeği isteğe bağlıdır.</b> Açarsanız yalnızca yapısal özetiniz (ilerleme, not geçmişi, plan) <b>açık rızanızla</b> yedeklenir; ham rapor/PDF asla yüklenmez.</p></div>
+        <div class="pitem"><span class="pc">✓</span><p><b>Topluluk analizi anonim ve isteğe bağlıdır</b> — isim veya e-posta paylaşılmaz.</p></div>
+        <div class="pitem"><span class="pc">✓</span><p><b>Tek dokunuşla silme:</b> hesabınızı ve buluttaki yedeğinizi istediğiniz an kalıcı olarak silebilirsiniz.</p></div>
+        <div class="pitem"><span class="pc">✓</span><p><b>Yeni kredi önermiyoruz.</b> Amacımız mevcut borcunuzu sağlıklı yönetmeniz.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="sss">
+  <div class="wrap center">
+    <span class="eyebrow">SSS</span>
+    <h2 class="sec">Sık sorulan sorular</h2>
+  </div>
+  <div class="wrap">
+    <div class="faq">
+      <div class="qa"><button>Kredi notu ile banka iç skoru aynı mı?<span class="chev">▾</span></button>
+        <div class="ans"><p>Hayır. Kredi notu, kredi büroları tarafından hesaplanan genel bir göstergedir;
+          bankalar kredi kararında kendi iç skor modellerini de kullanır. Notunuzun yükselmesi olumlu
+          bir eğilimdir, ancak tek başına onay garantisi vermez.</p></div></div>
+
+      <div class="qa"><button>Kredi raporu zorunlu mu?<span class="chev">▾</span></button>
+        <div class="ans"><p>Hayır. Eğitim ve borç planlama araçlarını kredi raporu vermeden de
+          kullanabilirsiniz — borçlarınızı elle girip planınızı oluşturmanız yeterli. Rapor eklerseniz
+          analiz daha kişisel olur.</p></div></div>
+
+      <div class="qa"><button>Verilerim güvende mi?<span class="chev">▾</span></button>
+        <div class="ans"><p>Kredi raporu verileriniz yalnızca cihazınızda/oturumunuzda tutulur, ham PDF
+          saklanmaz. Misafir kullanımda hiçbir şey sunucuya gönderilmez. Hesap açıp bulut yedeğini
+          açarsanız yalnızca yapısal özetiniz açık rızanızla yedeklenir; topluluk analizi tamamen
+          anonimdir. Verilerinizi istediğiniz an silebilirsiniz.</p></div></div>
+
+      <div class="qa"><button>Hesap açmak zorunda mıyım?<span class="chev">▾</span></button>
+        <div class="ans"><p>Hayır. Uygulama misafir olarak tam çalışır ve her şey cihazınızda kalır.
+          Hesap yalnızca ilerlemenizi yedeklemek ve cihaz değiştirdiğinizde geri yüklemek isterseniz
+          gereklidir.</p></div></div>
+
+      <div class="qa"><button>Findeks ile bir bağlantınız var mı?<span class="chev">▾</span></button>
+        <div class="ans"><p>Hayır. FinansNotum bağımsız bir uygulamadır; KKB / Findeks ile resmi bir
+          ilişkisi, ortaklığı veya onayı yoktur. "Findeks", KKB A.Ş.'nin tescilli markasıdır ve yalnızca
+          yüklediğiniz raporu tanımlamak için anılır.</p></div></div>
+
+      <div class="qa"><button>Ücretli mi?<span class="chev">▾</span></button>
+        <div class="ans"><p>Uygulama yayınlandığında fiyatlandırma detaylarını burada paylaşacağız.
+          Temel borç planlama ve eğitim araçlarının herkes tarafından kullanılabilmesini önemsiyoruz.</p></div></div>
+
+      <div class="qa"><button>Yeni kredi öneriyor musunuz?<span class="chev">▾</span></button>
+        <div class="ans"><p>Hayır. Amacımız mevcut borcunuzu planlı yönetmeniz ve kredi notunuzu sağlıklı
+          biçimde yükseltmeniz. Yeni kredi veya kart başvurusu önermiyoruz.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNUP -->
+<section style="padding:36px 0" id="kayit">
+  <div class="signup">
+    <span class="eyebrow" style="color:var(--teal)">Lansman</span>
+    <h2 style="margin-top:8px">Çıkınca ilk siz haberdar olun</h2>
+    <p>Uygulama yayınlandığında size e-posta ile haber verelim. Mağaza bağlantıları yakında aktifleşecek.</p>
+    <form class="frm" onsubmit="event.preventDefault();this.style.display='none';document.getElementById('ok').style.display='block';">
+      <input type="email" required placeholder="E-posta adresiniz" aria-label="E-posta">
+      <button class="btn btn-primary" type="submit">Beni bilgilendir</button>
+    </form>
+    <div class="ok" id="ok">Teşekkürler! Çıkınca size haber vereceğiz.</div>
+    <p class="note">E-postanızı yalnızca lansman bildirimi için kullanırız. İstediğiniz an çıkabilirsiniz.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <a href="#" class="brand"><span class="mark">F</span>FinansNotum</a>
+      <p>Kredi notunuzu yükseltmenize ve borcunuzu planlı kapatmanıza yardımcı olan mobil uygulama.</p>
+    </div>
+    <div>
+      <h5>Uygulama</h5>
+      <a href="#ozellikler">Özellikler</a>
+      <a href="#nasil">Nasıl çalışır</a>
+      <a href="#sss">SSS</a>
+      <a href="#kayit">Haber ver</a>
+    </div>
+    <div>
+      <h5>Yasal</h5>
+      <a href="#sss">Gizlilik</a>
+      <a href="#sss">KVKK Aydınlatma</a>
+      <a href="mailto:ozanbalcioglu@gmail.com">İletişim</a>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <b>FinansNotum bağımsız bir uygulamadır;</b> KKB / Findeks ile resmi bir ilişkisi, ortaklığı veya
+    onayı yoktur. "Findeks", KKB A.Ş.'nin tescilli markasıdır ve yalnızca kullanıcının yüklediği raporu
+    tanımlamak için anılır. Bu uygulama bilgilendirme amaçlıdır; yatırım veya finansal danışmanlık
+    hizmeti değildir. Tahminler garanti içermez.<br><br>
+    © 2026 FinansNotum · Tüm hakları saklıdır.
+  </div>
+</footer>
+
+<script>
+  // FAQ akordeon
+  document.querySelectorAll('.qa button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var qa=b.parentElement, open=qa.classList.contains('open');
+      document.querySelectorAll('.qa').forEach(function(x){x.classList.remove('open')});
+      if(!open) qa.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
